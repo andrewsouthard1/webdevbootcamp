@@ -21,22 +21,22 @@ var campgroundSchema = new mongoose.Schema({
 
 var Campground = mongoose.model("Campground", campgroundSchema);
 
-Campground.create(
-    {
+// Campground.create(
+//     {
         
-        name: "Blue Canyon", 
-        image: "https://farm4.staticflickr.com/3872/14435096036_39db8f04bc.jpg",
-        description: "Massive canyon, great time for all!"
+//         name: "Blue Canyon", 
+//         image: "https://farm4.staticflickr.com/3872/14435096036_39db8f04bc.jpg",
+//         description: "Massive canyon, great time for all!"
         
-    }, function(err, data){
-        if(err){
-            console.log("ERROR");
-        }
-        else{
-            console.log("Newly created campground!");
-            console.log(data);
-        }
-    });
+//     }, function(err, data){
+//         if(err){
+//             console.log("ERROR");
+//         }
+//         else{
+//             console.log("Newly created campground!");
+//             console.log(data);
+//         }
+//     });
 
 app.get("/", function(req, res){
     res.render("landing");
@@ -48,7 +48,7 @@ app.get("/campgrounds", function(req, res){
         if(err){
             console.log(err);
         } else {
-            res.render("campgrounds", {campgrounds:allCampgrounds});
+            res.render("index", {campgrounds:allCampgrounds});
         }
     });
     // res.render("campgrounds", {campgrounds: campgrounds});
@@ -58,7 +58,8 @@ app.post("/campgrounds", function(req, res){
     // get data from form and add to campground array
     var name = req.body.name;
     var image = req.body.image;
-    var newCampground = {name: name, image: image};
+    var desc = req.body.description;
+    var newCampground = {name: name, image: image, description: desc};
     //Create a new campground and save to DB
     Campground.create(newCampground, function(err, data){
         if(err){
@@ -74,9 +75,18 @@ app.get("/campgrounds/new", function(req, res){
     res.render("new.ejs");
 });
 
+//SHOW - shows more info about one campground
 app.get("/campgrounds/:id", function(req, res){
-    res.send("Coming soon!");
-})
+    //find the campground with provided ID
+    Campground.findById(req.params.id, function(err, foundCampground){
+        if(err){
+            console.log(err);
+        } else {
+            res.render("show", {campground: foundCampground});
+        }
+    });
+
+});
 
 app.listen(process.env.PORT, process.env.IP, function(){
     console.log("YelpCamp Server has Started!");
